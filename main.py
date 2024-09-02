@@ -37,16 +37,6 @@ async def login(user: User):
     access_token = create_access_token(data={"sub": user.username}, expires_delta=access_token_expires)
     return {"access_token": access_token, "token_type": "bearer"}
 
-@app.post("/token")
-async def login(form_data: OAuth2PasswordRequestForm = Depends()):
-    # Здесь вы должны проверить данные пользователя и вернуть JWT токен
-    return {"access_token": "example_token", "token_type": "bearer"}
-
-
-
-
-
-
 
 @app.post("/notes/", response_model=NoteInDB)
 async def create_new_note(note: NoteCreate, owner: str = Depends(get_current_user)):
@@ -81,13 +71,12 @@ async def update_existing_note(note_id: str, note: NoteUpdate, token: str = Depe
 
     if not updated_note_data:
         raise HTTPException(status_code=404, detail="Note not found or not authorized")
-
-    # Формируем объект заметки для возврата в ответе
+        
     updated_note = NoteInDB(
         id=note_id,
         title=updated_note_data['title'],
         content=updated_note_data['content'],
-        owner=owner  # Владелец устанавливается на основе текущего аутентифицированного пользователя
+        owner=owner 
     )
     return updated_note
 
